@@ -25,7 +25,7 @@ The Projects page is a content-rich, filterable showcase of selected work. It de
 
 ### URL Pattern
 
-```
+```txt
 /projects
 ```
 
@@ -148,7 +148,7 @@ Optional long-form content can go here if needed for a project detail page.
 
 ### Component Hierarchy
 
-```
+```txt
 pages/projects.astro
 ├── Layout (BaseLayout.astro)
 ├── SEO (SEOHead.astro)
@@ -171,7 +171,7 @@ pages/projects.astro
 ### Component Responsibility Matrix
 
 | Component | Rendering | Hydration | Responsibility | Complexity |
-|-----------|-----------|-----------|----------------|------------|
+| --------- | --------- | --------- | -------------- | ---------- |
 | ProjectsHero | Static | None | Page header | Low |
 | ProjectsFilterErrorBoundary | Client | Idle | Error handling | Low |
 | ProjectsFilter | Client | Idle | Filter UI & state | High |
@@ -189,6 +189,7 @@ pages/projects.astro
 **Props**: None (static content)
 
 **Structure**:
+
 ```astro
 ---
 // src/components/sections/ProjectsHero.astro
@@ -218,6 +219,7 @@ pages/projects.astro
 **Purpose**: Interactive filtering and search UI
 
 **Props**:
+
 ```typescript
 interface ProjectsFilterProps {
   projects: ProjectData[];
@@ -226,6 +228,7 @@ interface ProjectsFilterProps {
 ```
 
 **State Management**:
+
 ```typescript
 interface FilterState {
   searchQuery: string;
@@ -238,6 +241,7 @@ interface FilterState {
 **Hydration**: `client:idle` (not critical for initial render)
 
 **Features**:
+
 - Debounced search input (300ms)
 - Multi-select stack filter
 - Single-select domain filter
@@ -246,10 +250,12 @@ interface FilterState {
 - Clear all filters button
 
 **Analytics Events**:
+
 - `search_used` - when user types in search
 - `filter_change` - when filter selection changes
 
 **Accessibility**:
+
 - Keyboard navigation for all filters
 - ARIA labels for filter controls
 - Live region announcements for result counts
@@ -262,6 +268,7 @@ interface FilterState {
 **Purpose**: Responsive grid layout for project cards
 
 **Props**:
+
 ```typescript
 interface ProjectsGridProps {
   projects: CollectionEntry<'projects'>[];
@@ -269,6 +276,7 @@ interface ProjectsGridProps {
 ```
 
 **Structure**:
+
 ```astro
 ---
 // src/components/sections/ProjectsGrid.astro
@@ -287,6 +295,7 @@ const { projects } = Astro.props;
 ```
 
 **Styling**:
+
 - Mobile: 1 column
 - Tablet (md): 2 columns
 - Desktop (lg): 3 columns
@@ -301,6 +310,7 @@ const { projects } = Astro.props;
 **Purpose**: Individual project display card
 
 **Props**:
+
 ```typescript
 interface ProjectCardProps {
   project: CollectionEntry<'projects'>;
@@ -308,6 +318,7 @@ interface ProjectCardProps {
 ```
 
 **Structure**:
+
 ```astro
 ---
 // src/components/cards/ProjectCard.astro
@@ -366,11 +377,13 @@ const { title, summary, thumbnail, stack, domain, tags, featured } = project.dat
 ```
 
 **Analytics Integration**:
+
 - Track `project_click` when card is clicked
 - Track `repo_click` when GitHub link is clicked
 - Track `outbound_link_click` when external link is clicked
 
 **Accessibility**:
+
 - Semantic `<article>` element
 - Proper heading hierarchy
 - Alt text for images
@@ -385,6 +398,7 @@ const { title, summary, thumbnail, stack, domain, tags, featured } = project.dat
 **Purpose**: Action links for project (GitHub, Live Demo, Details)
 
 **Props**:
+
 ```typescript
 interface ProjectLinksProps {
   githubUrl?: string;
@@ -394,6 +408,7 @@ interface ProjectLinksProps {
 ```
 
 **Structure**:
+
 ```astro
 ---
 // src/components/cards/ProjectLinks.astro
@@ -454,7 +469,7 @@ const { githubUrl, liveUrl, slug } = Astro.props;
 
 ### Data Flow Diagram
 
-```
+```txt
 Build Time (SSG):
   Content Collection → Zod Validation → Sort & Filter → Static HTML
 
@@ -583,6 +598,7 @@ When the ProjectsFilter island hydrates:
 **Approach**: Client-side filtering with progressive enhancement
 
 **Why Client-Side?**
+
 - Projects list is finite (typically < 50 items)
 - Instant feedback without server round-trips
 - No need for API endpoints or SSR
@@ -593,6 +609,7 @@ When the ProjectsFilter island hydrates:
 ### Progressive Enhancement Strategy
 
 **Without JavaScript (SSG only):**
+
 - ✅ All projects visible
 - ✅ Project cards fully functional
 - ✅ Links work
@@ -601,6 +618,7 @@ When the ProjectsFilter island hydrates:
 - ❌ Search not available
 
 **With JavaScript (After Hydration):**
+
 - ✅ Interactive filters
 - ✅ Real-time search
 - ✅ Filter chips
@@ -608,6 +626,7 @@ When the ProjectsFilter island hydrates:
 - ✅ Analytics tracking
 
 **Fallback Strategy:**
+
 - Filters hidden with `<noscript>` message
 - All projects visible by default
 - Content remains accessible
@@ -616,6 +635,7 @@ When the ProjectsFilter island hydrates:
 ### URL State Management
 
 Filter state is synchronized with URL parameters to enable:
+
 - Shareable filtered views
 - Browser back/forward navigation
 - Bookmarkable searches
@@ -680,6 +700,7 @@ export function useFilterState() {
 ```
 
 **Example URLs:**
+
 - `/projects` - All projects
 - `/projects?q=dashboard` - Search for "dashboard"
 - `/projects?stack=React,TypeScript` - Filter by React and TypeScript
@@ -755,6 +776,7 @@ export function usePersistedFilterState() {
 ```
 
 **Benefits:**
+
 - Preserves user's filter selections across navigation
 - Expires after 30 minutes to avoid stale state
 - Graceful fallback if storage fails
@@ -897,12 +919,14 @@ function countBy<T>(items: T[], key?: keyof T): Record<string, number> {
 **Strategy**: Simple string matching with debouncing (no external dependencies)
 
 **Features**:
+
 - Case-insensitive search
 - Searches across: title, summary, description, stack, tags
 - 300ms debounce to reduce re-renders
 - Clear button to reset search
 
 **Why Simple String Matching?**
+
 - Projects list is small (< 50 items)
 - Simple `.includes()` is fast and sufficient
 - No additional dependencies needed
@@ -988,6 +1012,7 @@ export default ProjectsFilterErrorBoundary;
 ```
 
 **Usage:**
+
 ```astro
 <ProjectsFilterErrorBoundary client:idle>
   <ProjectsFilter 
@@ -1000,6 +1025,7 @@ export default ProjectsFilterErrorBoundary;
 ```
 
 **Benefits:**
+
 - Prevents entire page crash if filter logic fails
 - Provides graceful fallback (all projects visible)
 - Logs errors for debugging
@@ -1336,6 +1362,7 @@ export default function SearchInput({
 ```
 
 **Features:**
+
 - 300ms debounce to reduce re-renders
 - Local state for immediate UI feedback
 - Syncs with external value prop
@@ -1350,6 +1377,7 @@ export default function SearchInput({
 **Decision**: DOM Manipulation with class toggling
 
 **Rationale:**
+
 1. **Simpler implementation** - Direct DOM manipulation is more straightforward than complex CSS attribute selectors
 2. **Better performance** - Toggling classes is faster than CSS parsing data attributes
 3. **Easier debugging** - Visible class changes in DevTools vs. hidden CSS logic
@@ -1400,7 +1428,7 @@ useEffect(() => {
 ### Decision Matrix: Filter Communication Approaches
 
 | Approach | Performance | Maintainability | Testability | Complexity | Recommendation |
-|----------|-------------|-----------------|-------------|------------|----------------|
+| -------- | ----------- | --------------- | ----------- | ---------- | -------------- |
 | CSS-based | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ❌ |
 | DOM manipulation | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ | ✅ |
 | Full client-side | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐ | ❌ |
@@ -1749,6 +1777,7 @@ export default function FilterDropdown({
 ```
 
 **Features:**
+
 - Multi-select or single-select mode
 - Keyboard navigation (Escape to close)
 - Outside click detection
@@ -1871,6 +1900,7 @@ const sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
 ```
 
 **Strategy**:
+
 - Use Astro's built-in Image component
 - Lazy load all project images
 - Generate WebP format with quality optimization
@@ -1937,6 +1967,7 @@ const DomainFilter = lazy(() => import('./DomainFilter'));
 ### Keyboard Navigation
 
 **Requirements**:
+
 - Tab through all interactive elements
 - Enter/Space to activate buttons and checkboxes
 - Escape to clear search or close dropdowns
@@ -1945,6 +1976,7 @@ const DomainFilter = lazy(() => import('./DomainFilter'));
 ### Screen Reader Support
 
 **Announcements**:
+
 ```html
 <!-- Results count announcement -->
 <div 
@@ -1965,6 +1997,7 @@ const DomainFilter = lazy(() => import('./DomainFilter'));
 ```
 
 **Labels**:
+
 ```html
 <label for="project-search" class="form-label">
   Search projects
@@ -2618,6 +2651,7 @@ try {
 ### Unit Tests
 
 **Filter Logic**:
+
 ```typescript
 // src/lib/filters/projectFilters.test.ts
 import { describe, it, expect } from 'vitest';
@@ -2652,6 +2686,7 @@ describe('filterProjects', () => {
 ```
 
 **Analytics Tracking**:
+
 ```typescript
 // src/lib/analytics/track.test.ts
 import { describe, it, expect, vi } from 'vitest';
@@ -2827,7 +2862,7 @@ describe('ProjectsFilter Integration', () => {
 
 ---
 
-### Event Delegation
+### Testing Event Delegation
 
 Use event delegation for link clicks to avoid attaching listeners to every card:
 
@@ -2943,6 +2978,7 @@ test.describe('Projects Page', () => {
 ### Test Scenarios Matrix
 
 **Filter Edge Cases:**
+
 - ✅ Empty search query
 - ✅ Special characters in search (`<script>`, `&`, quotes)
 - ✅ Very long search query (> 100 chars)
@@ -2952,12 +2988,14 @@ test.describe('Projects Page', () => {
 - ✅ All projects match filter
 
 **Analytics Edge Cases:**
+
 - ✅ dataLayer not initialized (graceful fallback)
 - ✅ Tracking errors (try-catch in trackEvent)
 - ✅ Multiple rapid filter changes (debouncing)
 - ✅ Analytics disabled (check window.dataLayer exists)
 
 **Accessibility Edge Cases:**
+
 - ✅ Screen reader navigation (ARIA live regions)
 - ✅ Keyboard-only navigation (Tab, Enter, Escape)
 - ✅ Focus trap prevention in dropdowns
@@ -2965,12 +3003,14 @@ test.describe('Projects Page', () => {
 - ✅ Skip link functionality
 
 **Performance Edge Cases:**
+
 - ✅ 100+ projects (stress test filtering speed)
 - ✅ Slow network (image lazy loading)
 - ✅ Slow device (filter debouncing effectiveness)
 - ✅ Rapid filter changes (memoization effectiveness)
 
 **State Management Edge Cases:**
+
 - ✅ URL state sync on mount
 - ✅ URL state update on filter change
 - ✅ SessionStorage persistence
@@ -3054,6 +3094,7 @@ export interface PersistedFilterState extends FilterCriteria {
 ### Analytics Types
 
 See "Analytics Implementation" section above for complete type definitions including:
+
 - `SearchUsedEvent`
 - `FilterChangeEvent`
 - `ProjectClickEvent`
@@ -3069,7 +3110,7 @@ See "Analytics Implementation" section above for complete type definitions inclu
 
 Complete file organization for the Projects page:
 
-```
+```txt
 src/
 ├── components/
 │   ├── cards/
@@ -3141,6 +3182,7 @@ tests/
 **Goal**: Build static projects page without interactivity
 
 **Tasks**:
+
 1. Create content collection schema
 2. Add sample project entries (5-10 projects)
 3. Build ProjectsHero component
@@ -3159,6 +3201,7 @@ tests/
 **Goal**: Add client-side filtering and search
 
 **Tasks**:
+
 1. Create filter utility functions
 2. Build SearchInput component
 3. Build StackFilter component
@@ -3178,6 +3221,7 @@ tests/
 **Goal**: Track user interactions
 
 **Tasks**:
+
 1. Define analytics event types
 2. Implement event tracking utilities
 3. Add analytics to filter interactions
@@ -3195,6 +3239,7 @@ tests/
 **Goal**: Refine UX and performance
 
 **Tasks**:
+
 1. Add loading states
 2. Optimize images
 3. Add animations (subtle)
@@ -3224,7 +3269,7 @@ tests/
 - **CLS**: < 0.1
 - **INP**: < 200ms
 
-### JavaScript Budget
+### Implementation JavaScript Budget
 
 - **Initial bundle**: < 30 KB (gzipped)
 - **Filter island**: < 12 KB (gzipped)
@@ -3258,7 +3303,7 @@ tests/
 - [ ] `aria-checked` for checkbox filters
 - [ ] `role="status"` for dynamic updates
 
-### Keyboard Navigation
+### Accessibility Keyboard Navigation
 
 - [ ] Tab through all interactive elements
 - [ ] Enter/Space activates buttons
@@ -3267,7 +3312,7 @@ tests/
 - [ ] Focus visible on all interactive elements
 - [ ] Skip to main content link
 
-### Screen Reader Support
+### Accessibility Screen Reader Support
 
 - [ ] Announce filter changes
 - [ ] Announce result count changes
@@ -3319,7 +3364,7 @@ tests/
 - [ ] `twitter:description`
 - [ ] `twitter:image`
 
-### Structured Data
+### Accessibility Structured Data
 
 - [ ] CollectionPage schema
 - [ ] ItemList with CreativeWork items
@@ -3356,17 +3401,20 @@ tests/
 ### Integration Opportunities
 
 **GitHub API**:
+
 - Fetch live repository stats for projects with GitHub links
 - Display stars, forks, last commit date
 - Show language breakdown
 - Cache data with TTL
 
 **Content Relationships**:
+
 - Link projects to related case studies
 - Show case studies that reference projects
 - Cross-reference between content types
 
 **Advanced Analytics**:
+
 - Track time spent on page
 - Track scroll depth
 - Track filter combinations (most popular)
@@ -3381,6 +3429,7 @@ tests/
 **Decision**: Client-side filtering
 
 **Rationale**:
+
 - Projects list is small (< 50 items)
 - Instant feedback improves UX
 - No server round-trips needed
@@ -3388,6 +3437,7 @@ tests/
 - Works with static generation
 
 **Trade-offs**:
+
 - All project data sent to client
 - Filtering logic runs in browser
 - Not suitable for 100+ projects
@@ -3401,6 +3451,7 @@ tests/
 **Decision**: DOM manipulation with class toggling
 
 **Rationale**:
+
 - Simpler implementation than complex CSS attribute selectors
 - Better performance - toggling classes is faster than CSS parsing data attributes
 - Easier debugging - visible class changes in DevTools
@@ -3408,6 +3459,7 @@ tests/
 - Progressive enhancement preserved - all cards visible without JavaScript
 
 **Trade-offs**:
+
 - Direct DOM manipulation from React (crosses framework boundary)
 - Requires `data-project-slug` attribute on each card
 - Must ensure cards exist in DOM before manipulation
@@ -3421,12 +3473,14 @@ tests/
 **Decision**: Single ProjectsFilter island
 
 **Rationale**:
+
 - Shared state between filter controls
 - Single hydration boundary
 - Simpler data flow
 - Smaller bundle size
 
 **Trade-offs**:
+
 - All filter logic hydrates together
 - Can't independently lazy-load filters
 
@@ -3439,12 +3493,14 @@ tests/
 **Decision**: 300ms debounced search
 
 **Rationale**:
+
 - Reduces re-renders while typing
 - Better performance
 - Still feels instant to users
 - Reduces analytics noise
 
 **Trade-offs**:
+
 - Slight delay before results update
 - More complex implementation
 
@@ -3454,21 +3510,25 @@ tests/
 
 ### Decision 5: Filter Logic (AND vs. OR)
 
-**Decision**: 
+**Decision**:
+
 - Within same filter type: OR logic
 - Across filter types: AND logic
 
 **Example**:
+
 - Stack: [React, Vue] → Show projects with React OR Vue
 - Domain: [media] → Show projects in media domain
 - Combined: Show projects with (React OR Vue) AND (media domain)
 
 **Rationale**:
+
 - OR within type is more permissive (better for discovery)
 - AND across types narrows results (more specific)
 - Matches user mental model
 
 **Trade-offs**:
+
 - More complex to explain
 - Requires clear UI indicators
 
@@ -3526,6 +3586,7 @@ tests/
 ### Performance Monitoring
 
 **Metrics to track**:
+
 - Page load time (p50, p95, p99)
 - Filter interaction latency
 - Search debounce effectiveness
@@ -3535,6 +3596,7 @@ tests/
 - Filter-to-grid update time
 
 **Tools**:
+
 - Lighthouse CI in GitHub Actions
 - Web Vitals tracking (see Performance Monitoring section)
 - Bundle size monitoring with `bundlesize` package
@@ -3544,6 +3606,7 @@ tests/
 ### Content Guidelines
 
 **For content authors**:
+
 - Use consistent frontmatter format
 - Provide high-quality thumbnails (400x250px)
 - Write concise summaries (< 150 characters)
@@ -3677,6 +3740,7 @@ validateProjects();
 ```
 
 **Benefits:**
+
 - Catches content issues before build
 - Enforces consistency across projects
 - Validates image dimensions and existence
@@ -3690,11 +3754,13 @@ validateProjects();
 ### Analytics System
 
 **Dependencies**:
+
 - `src/lib/analytics/dataLayer.ts` - dataLayer initialization
 - `src/lib/analytics/track.ts` - Event tracking utilities
 - `src/lib/analytics/events.ts` - Event type definitions
 
 **Integration**:
+
 ```typescript
 import { trackEvent } from '../../lib/analytics/track';
 
@@ -3709,11 +3775,13 @@ trackEvent('filter_change', {
 ### Design System
 
 **Dependencies**:
+
 - Design tokens from `docs/design-system.md`
 - Component styles (Button, Badge, Card)
 - Utility classes
 
 **Integration**:
+
 - Use semantic color variables
 - Follow spacing system
 - Apply consistent border radius
@@ -3722,10 +3790,12 @@ trackEvent('filter_change', {
 ### Content Collections
 
 **Dependencies**:
+
 - Astro Content Collections API
 - Zod schema validation
 
 **Integration**:
+
 ```typescript
 import { getCollection } from 'astro:content';
 
@@ -3759,6 +3829,7 @@ export function sanitizeSearchQuery(query: string): string {
 ```
 
 **Usage:**
+
 ```typescript
 const handleSearchChange = useCallback((query: string) => {
   const sanitized = sanitizeSearchQuery(query);
@@ -3767,6 +3838,7 @@ const handleSearchChange = useCallback((query: string) => {
 ```
 
 **Additional XSS protections:**
+
 - Use Astro's automatic escaping for content
 - Validate URLs before rendering links
 - Use `rel="noopener noreferrer"` for external links
@@ -3830,6 +3902,7 @@ function isValidUrl(url: string): boolean {
 ### Analytics Dashboards
 
 **Key Metrics**:
+
 - Page views
 - Search usage rate
 - Most used filters
@@ -3839,11 +3912,12 @@ function isValidUrl(url: string): boolean {
 - Filter combination patterns
 
 **Segmentation**:
+
 - By device type
 - By traffic source
 - By user journey
 
-### Performance Monitoring
+### Performance Monitoring & Observability
 
 **Real-time Web Vitals tracking:**
 
@@ -3901,6 +3975,7 @@ export function initProjectsVitals() {
 ```
 
 **Usage:**
+
 ```astro
 <script>
   import { initProjectsVitals } from '../lib/vitals/projectsVitals';
@@ -3909,6 +3984,7 @@ export function initProjectsVitals() {
 ```
 
 **Metrics tracked**:
+
 - Page load time (p50, p95, p99)
 - Filter interaction latency
 - Search debounce effectiveness
@@ -3917,6 +3993,7 @@ export function initProjectsVitals() {
 - Core Web Vitals (LCP, CLS, INP, FCP, TTFB)
 
 **Alerts**:
+
 - Performance regression (> 10% slower)
 - JavaScript errors
 - Failed content collection builds
@@ -3971,6 +4048,7 @@ export default defineConfig({
 ```
 
 **CI/CD Integration:**
+
 ```yaml
 # .github/workflows/ci.yml
 - name: Check bundle size
@@ -3987,6 +4065,7 @@ export default defineConfig({
 ### Error Tracking
 
 **Capture**:
+
 - Content collection errors
 - Filter logic errors
 - Analytics tracking failures
@@ -3994,6 +4073,7 @@ export default defineConfig({
 - React error boundary catches
 
 **Context**:
+
 - User agent
 - Viewport size
 - Active filters
@@ -4008,6 +4088,7 @@ export default defineConfig({
 ### Component Documentation
 
 Each component should include:
+
 - Purpose and responsibility
 - Props interface with descriptions
 - Usage examples
@@ -4017,6 +4098,7 @@ Each component should include:
 ### API Documentation
 
 Document filter functions:
+
 - Function signature
 - Parameters
 - Return type
@@ -4026,6 +4108,7 @@ Document filter functions:
 ### Content Authoring Guide
 
 Provide guidelines for:
+
 - Frontmatter structure
 - Required vs. optional fields
 - Image specifications
@@ -4090,7 +4173,7 @@ Provide guidelines for:
 
 ### Sample Filter State Transitions
 
-```
+```txt
 Initial State:
   searchQuery: ""
   selectedStacks: []
@@ -4166,6 +4249,7 @@ dataLayer.push({
 ### Sample Project Frontmatter Variations
 
 **Minimal Project**:
+
 ```yaml
 ---
 title: "Simple Landing Page"
@@ -4182,6 +4266,7 @@ startDate: 2025-06-01
 ```
 
 **Featured Project with All Fields**:
+
 ```yaml
 ---
 title: "Enterprise ERP Modernization"
@@ -4308,7 +4393,7 @@ order: 1
 - [ ] Validate stack name consistency
 - [ ] Create content authoring guide
 
-### Documentation
+### Documentation Checklist
 
 - [ ] Document component APIs
 - [ ] Document filter logic
@@ -4351,95 +4436,95 @@ order: 1
 
 #### Important Issues Addressed
 
-5. **Integration Tests** (Issue 4)
+1. **Integration Tests** (Issue 4)
    - ✅ Added integration test section with complete examples
    - ✅ Tests filter-to-grid DOM manipulation
    - ✅ Tests ARIA announcements
 
-6. **Analytics Race Condition** (Issue 5)
+2. **Analytics Race Condition** (Issue 5)
    - ✅ Fixed result count calculation in callbacks
    - ✅ Calculate counts inline for accuracy
    - ✅ Updated all filter change handlers
 
-7. **Debounce Implementation** (Issue 7)
+3. **Debounce Implementation** (Issue 7)
    - ✅ Added complete `SearchInput` component with debouncing
    - ✅ 300ms debounce with cleanup
    - ✅ Local state for immediate UI feedback
 
-8. **URL State Management** (Issue 8)
+4. **URL State Management** (Issue 8)
    - ✅ Added `useFilterState` hook with URL synchronization
    - ✅ Enables shareable filtered views
    - ✅ Supports browser back/forward
 
-9. **Content Collection Error Handling** (Issue 9)
+5. **Content Collection Error Handling** (Issue 9)
    - ✅ Fail fast in development
    - ✅ Graceful degradation in production
    - ✅ Validation for empty collections
 
-10. **Type-Safe Analytics** (Issue 15)
+6. **Type-Safe Analytics** (Issue 15)
     - ✅ Added global `Window` interface augmentation
     - ✅ Type-safe `trackEvent` function
     - ✅ Complete event type definitions
 
 #### Minor Issues Addressed
 
-11. **Loading State** (Issue 6)
+1. **Loading State** (Issue 6)
     - ✅ Added hydration state tracking
     - ✅ Skeleton UI while island hydrates
     - ✅ Prevents interaction before hydration
 
-12. **State Persistence** (Issue 12)
+2. **State Persistence** (Issue 12)
     - ✅ Added `usePersistedFilterState` hook
     - ✅ SessionStorage with 30-minute TTL
     - ✅ Restores filters on navigation back
 
-13. **Image Error Handling** (Issue 13)
+3. **Image Error Handling** (Issue 13)
     - ✅ Removed inline `onerror` attribute
     - ✅ Build-time image validation
     - ✅ Fallback to placeholder
 
-14. **FilterDropdown Implementation** (Issue 14)
+4. **FilterDropdown Implementation** (Issue 14)
     - ✅ Complete component with keyboard navigation
     - ✅ Outside click detection
     - ✅ Escape key handling
     - ✅ Multi-select support
 
-15. **Fuse.js Removal** (Issue 16)
+5. **Fuse.js Removal** (Issue 16)
     - ✅ Removed Fuse.js suggestion
     - ✅ Kept simple string matching
     - ✅ Added custom fuzzy match option (no dependency)
 
-16. **Dark Mode Images** (Issue 17)
+6. **Dark Mode Images** (Issue 17)
     - ✅ Added `thumbnailDark` field to schema
     - ✅ CSS blend mode for white backgrounds
     - ✅ Automatic dark mode handling
 
-17. **Performance Budget Enforcement** (Issue 18)
+7. **Performance Budget Enforcement** (Issue 18)
     - ✅ Added bundlesize configuration
     - ✅ CI/CD integration examples
     - ✅ Manual chunks configuration
 
-18. **Content Validation** (Issue 19)
+8. **Content Validation** (Issue 19)
     - ✅ Complete validation script
     - ✅ Checks dimensions, lengths, consistency
     - ✅ Prebuild integration
 
-19. **Filter Count Display** (Issue 20)
+9. **Filter Count Display** (Issue 20)
     - ✅ Made `count` required in `FilterOption`
     - ✅ Added count display in dropdown
     - ✅ Styled count badges
 
-20. **Skip Link** (Issue 11)
+10. **Skip Link** (Issue 11)
     - ✅ Added skip-to-projects link
     - ✅ Keyboard accessible
     - ✅ Proper styling and positioning
 
-21. **Responsive Filter Layout** (Issue 21)
+11. **Responsive Filter Layout** (Issue 21)
     - ✅ Mobile-optimized vertical stacking
     - ✅ Tablet horizontal with wrap
     - ✅ Desktop full horizontal layout
 
-22. **Enhanced Empty State** (Issue 22)
+12. **Enhanced Empty State** (Issue 22)
     - ✅ Different messages for filtered vs. no content
     - ✅ Clear filters button
     - ✅ Actionable guidance
