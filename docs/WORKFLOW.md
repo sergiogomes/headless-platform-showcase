@@ -36,7 +36,7 @@ This project uses **specialized AI engineering skills** - each skill is a separa
 
 Each phase creates a document for the next:
 
-**Phase 1: Architecture** (new chat, Sonnet 4.5)
+✅ **Phase 1: Architecture** (new chat, Sonnet 4.5)
 
 ```txt
 @astro-platform-architect
@@ -45,7 +45,7 @@ Design the projects page architecture.
 Output: docs/features/projects-page-architecture.md
 ```
 
-**Phase 2: Design System** (new chat, Sonnet 4.5)
+✅ **Phase 2: Design System** (new chat, Sonnet 4.5)
 
 ```txt
 @ui-design-engineer
@@ -55,7 +55,7 @@ Design the UI components (ProjectCard, FilterPanel).
 Output: docs/features/projects-page-design.md
 ```
 
-**Phase 3: Data Layer** (new chat, Sonnet 4.5 for design)
+✅ **Phase 3: Data Layer** (new chat, Sonnet 4.5 for design)
 
 ```txt
 @github-api-engineer
