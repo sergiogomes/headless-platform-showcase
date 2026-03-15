@@ -21,6 +21,9 @@ endDate: 2024-08-30
 seoTitle: "Editorial Component System - React Headless CMS"
 seoDescription: "Case study on building a scalable component library for multi-brand editorial platforms"
 
+thumbnail: "/images/projects/editorial-component-system.png"
+thumbnailAlt: "Screenshot of the editorial component system UI showing reusable blocks in a content editor"
+
 order: 1
 ---
 

@@ -20,6 +20,9 @@ startDate: 2025-01-01
 seoTitle: "Headless Platform Showcase - Astro Engineering Portfolio"
 seoDescription: "Engineering portfolio built with Astro, React islands, and GitHub API integration."
 
+thumbnail: "/images/projects/headless-platform-showcase.png"
+thumbnailAlt: "Screenshot of the headless platform showcase projects dashboard with filters and project cards"
+
 order: 2
 ---
 

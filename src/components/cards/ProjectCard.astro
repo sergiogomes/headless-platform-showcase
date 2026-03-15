@@ -9,7 +9,18 @@ interface Props {
 }
 
 const { project, repoStats } = Astro.props;
-const { title, summary, thumbnail, stack, domain, tags, featured, githubUrl, liveUrl } = project.data;
+const {
+  title,
+  summary,
+  thumbnail,
+  thumbnailAlt,
+  stack,
+  domain,
+  tags,
+  featured,
+  githubUrl,
+  liveUrl,
+} = project.data;
 const slug = project.id;
 ---
 
@@ -17,12 +28,13 @@ const slug = project.id;
   class="card project-card"
   data-featured={featured}
   data-project-slug={project.id}
+  aria-labelledby={`project-title-${slug}`}
 >
   {thumbnail && (
     <div class="project-card-image">
       <img
         src={thumbnail}
-        alt={title}
+        alt={thumbnailAlt || `Screenshot of ${title}`}
         width={400}
         height={250}
         loading="lazy"
@@ -35,12 +47,12 @@ const slug = project.id;
       {featured && <Badge variant="primary">Featured</Badge>}
       <span class="badge">{domain}</span>
     </div>
-    <h3 class="card-title">{title}</h3>
+    <h3 class="card-title" id={`project-title-${slug}`}>{title}</h3>
     <p class="card-subtitle">{summary}</p>
     {repoStats && (
-      <div class="project-card-repo-stats" aria-label="Repository statistics">
-        <span>★ {repoStats.stars}</span>
-        <span>⎇ {repoStats.forks}</span>
+      <div class="project-card-repo-stats">
+        <span aria-label={`${repoStats.stars} stars`}>★ {repoStats.stars}</span>
+        <span aria-label={`${repoStats.forks} forks`}>⎇ {repoStats.forks}</span>
         {repoStats.language && <span>{repoStats.language}</span>}
       </div>
     )}

@@ -11,6 +11,7 @@ export const projectSchema = z.object({
   coverImage: z.string().optional(),
   thumbnail: z.string().optional(),
   thumbnailDark: z.string().optional(),
+  thumbnailAlt: z.string().optional(),
 
   stack: z.array(z.string()).default([]),
   domain: z.enum([
