@@ -51,7 +51,7 @@ export default function FilterChips({
             type="button"
             className="filter-chip-remove"
             onClick={() => onRemoveStack(stack)}
-            aria-label={`Remove stack ${stack}`}
+            aria-label={`Remove ${stack} stack filter`}
           >
             ×
           </button>
@@ -64,7 +64,7 @@ export default function FilterChips({
             type="button"
             className="filter-chip-remove"
             onClick={() => onRemoveDomain(domain)}
-            aria-label={`Remove domain ${domain}`}
+            aria-label={`Remove ${domain} domain filter`}
           >
             ×
           </button>
@@ -77,7 +77,7 @@ export default function FilterChips({
             type="button"
             className="filter-chip-remove"
             onClick={() => onRemoveTag(tag)}
-            aria-label={`Remove tag ${tag}`}
+            aria-label={`Remove ${tag} tag filter`}
           >
             ×
           </button>

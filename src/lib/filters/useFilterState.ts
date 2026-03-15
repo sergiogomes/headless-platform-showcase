@@ -1,10 +1,30 @@
 import { useState, useEffect } from 'react';
 import type { FilterCriteria } from '../../types/filters';
+import { sanitizeSearchQuery } from './sanitize';
 
 const PARAM_Q = 'q';
 const PARAM_STACK = 'stack';
 const PARAM_DOMAIN = 'domain';
 const PARAM_TAGS = 'tags';
+
+const MAX_FILTER_VALUES = 20;
+const MAX_VALUE_LENGTH = 50;
+
+function sanitizeFilterValue(value: string): string {
+  return value
+    .trim()
+    .slice(0, MAX_VALUE_LENGTH)
+    .replace(/[<>'"]/g, '');
+}
+
+function sanitizeFilterArray(value: string | null): string[] {
+  if (!value) return [];
+  return value
+    .split(',')
+    .map(sanitizeFilterValue)
+    .filter(Boolean)
+    .slice(0, MAX_FILTER_VALUES);
+}
 
 /**
  * Reads filter state from the current URL query string (q, stack, domain, tags).
@@ -19,13 +39,26 @@ function getInitialStateFromUrl(): FilterCriteria {
       selectedTags: [],
     };
   }
-  const params = new URLSearchParams(window.location.search);
-  return {
-    searchQuery: params.get(PARAM_Q) ?? '',
-    selectedStacks: params.get(PARAM_STACK)?.split(',').filter(Boolean) ?? [],
-    selectedDomains: params.get(PARAM_DOMAIN)?.split(',').filter(Boolean) ?? [],
-    selectedTags: params.get(PARAM_TAGS)?.split(',').filter(Boolean) ?? [],
-  };
+  
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const searchQuery = params.get(PARAM_Q);
+    
+    return {
+      searchQuery: searchQuery ? sanitizeSearchQuery(searchQuery) : '',
+      selectedStacks: sanitizeFilterArray(params.get(PARAM_STACK)),
+      selectedDomains: sanitizeFilterArray(params.get(PARAM_DOMAIN)),
+      selectedTags: sanitizeFilterArray(params.get(PARAM_TAGS)),
+    };
+  } catch (error) {
+    console.warn('Failed to parse URL query params:', error);
+    return {
+      searchQuery: '',
+      selectedStacks: [],
+      selectedDomains: [],
+      selectedTags: [],
+    };
+  }
 }
 
 /**

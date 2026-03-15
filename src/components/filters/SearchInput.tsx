@@ -14,18 +14,26 @@ export default function SearchInput({
   debounceMs = 300,
 }: SearchInputProps) {
   const [localValue, setLocalValue] = useState(value);
+  const [isDebouncing, setIsDebouncing] = useState(false);
 
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
 
   useEffect(() => {
+    if (localValue !== value) {
+      setIsDebouncing(true);
+    }
     const timer = setTimeout(() => {
       if (localValue !== value) {
         onChange(localValue);
       }
+      setIsDebouncing(false);
     }, debounceMs);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      setIsDebouncing(false);
+    };
   }, [localValue, debounceMs, onChange, value]);
 
   const handleClear = () => {
@@ -33,18 +41,46 @@ export default function SearchInput({
     onChange('');
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && localValue) {
+        const searchInput = document.getElementById('project-search');
+        if (document.activeElement === searchInput) {
+          e.preventDefault();
+          handleClear();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [localValue]);
+
   return (
     <div className="search-input-wrapper">
-      <svg
-        className="search-input-icon"
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-        aria-hidden="true"
-      >
-        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-      </svg>
+      {isDebouncing ? (
+        <svg
+          className="search-input-icon search-input-spinner"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <circle cx="8" cy="8" r="6" strokeWidth="2" strokeDasharray="30 10" />
+        </svg>
+      ) : (
+        <svg
+          className="search-input-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+        </svg>
+      )}
       <input
         type="search"
         id="project-search"
@@ -69,7 +105,7 @@ export default function SearchInput({
         </button>
       ) : null}
       <p id="search-help" className="sr-only">
-        Search by title, technology, or keyword
+        Search by title, technology, or keyword. Press Escape to clear.
       </p>
     </div>
   );

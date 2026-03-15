@@ -6,9 +6,9 @@ interface Props {
 const { projectCount } = Astro.props;
 ---
 
-<section class="projects-hero">
+<section class="projects-hero" aria-labelledby="projects-heading">
   <div class="container">
-    <h1 class="heading-1">Projects</h1>
+    <h1 id="projects-heading" class="heading-1">Projects</h1>
     <p class="body-large text-secondary">
       Selected work across media platforms, fintech, enterprise systems, and developer tools.
     </p>

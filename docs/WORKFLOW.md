@@ -124,7 +124,7 @@ Review: src/pages/projects.astro and related components
 Output: docs/reviews/projects-page-a11y-seo-audit.md
 ```
 
-**Phase 9: Final Review** (new chat, Sonnet 4.5)
+✅ **Phase 9: Final Review** (new chat, Sonnet 4.5)
 
 ```txt
 @platform-reviewer
@@ -136,7 +136,7 @@ Read: docs/reviews/projects-page-a11y-seo-audit.md
 Output: docs/reviews/projects-page-final-review.md
 ```
 
-**Phase 10: Fixes** (new chat, Auto or Sonnet based on complexity)
+✅ **Phase 10: Fixes** (new chat, Auto or Sonnet based on complexity)
 
 ```txt
 @ui-design-engineer (or relevant skill)
@@ -144,6 +144,8 @@ Output: docs/reviews/projects-page-final-review.md
 Read: docs/reviews/projects-page-final-review.md
 Implement all recommended improvements.
 ```
+
+TODO: write phases 11 and 12 with prompts for @mdx-content-architect and @devops-engineer
 
 ---
 

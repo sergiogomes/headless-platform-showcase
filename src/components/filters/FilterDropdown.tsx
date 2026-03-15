@@ -32,6 +32,7 @@ export default function FilterDropdown({
   multiSelect = true,
 }: FilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -133,14 +134,24 @@ export default function FilterDropdown({
 
   const handleToggle = useCallback(
     (value: string) => {
+      const isSelected = selected.includes(value);
+      let newSelected: string[];
+      
       if (multiSelect) {
-        onChange(
-          selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value]
-        );
+        newSelected = isSelected ? selected.filter((v) => v !== value) : [...selected, value];
+        onChange(newSelected);
       } else {
-        onChange([value]);
+        newSelected = [value];
+        onChange(newSelected);
         setIsOpen(false);
       }
+
+      const action = isSelected ? 'removed' : 'selected';
+      const count = newSelected.length;
+      const filterWord = count === 1 ? 'filter' : 'filters';
+      setAnnouncement(`${value} ${action}. ${count} ${filterWord} active.`);
+      
+      setTimeout(() => setAnnouncement(''), 3000);
     },
     [multiSelect, selected, onChange]
   );
@@ -203,6 +214,14 @@ export default function FilterDropdown({
           ))}
         </div>
       ) : null}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
     </div>
   );
 }

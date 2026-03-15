@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { enrichProjectsWithGitHub } from '../lib/github/queries';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/ui/Breadcrumb.astro';
 import ProjectsHero from '../components/sections/ProjectsHero.astro';
 import ProjectsFilterErrorBoundary from '../components/filters/ProjectsFilterErrorBoundary';
 import ProjectsFilter from '../components/filters/ProjectsFilter';
@@ -100,9 +101,19 @@ const structuredDataJson = JSON.stringify(structuredData).replace(/</g, '\\u003c
   description="Selected work across media platforms, fintech, enterprise systems, and developer tools"
 >
   <script type="application/ld+json" set:html={structuredDataJson} />
+  
+  <div class="container">
+    <Breadcrumb
+      items={[
+        { label: 'Home', href: '/' },
+        { label: 'Projects' },
+      ]}
+    />
+  </div>
+
   <ProjectsHero projectCount={sortedProjects.length} />
 
-  <section class="projects-section">
+  <section class="projects-section" aria-label="Project filters and gallery">
     <div class="container">
       <a href="#projects-grid" class="skip-link">Skip to projects</a>
 
@@ -115,7 +126,7 @@ const structuredDataJson = JSON.stringify(structuredData).replace(/</g, '\\u003c
         />
       </ProjectsFilterErrorBoundary>
 
-      <div id="projects-grid">
+      <div id="projects-grid" tabindex="-1">
         {sortedProjects.length > 0 ? (
           <ProjectsGrid projects={sortedProjects} repoStatsMap={repoStatsMap} />
         ) : (
