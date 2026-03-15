@@ -1,0 +1,63 @@
+---
+import Badge from '../ui/Badge.astro';
+import ProjectLinks from './ProjectLinks.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  repoStats?: { stars: number; forks: number; language: string | null; updatedAt: string };
+}
+
+const { project, repoStats } = Astro.props;
+const { title, summary, thumbnail, stack, domain, tags, featured, githubUrl, liveUrl, slug } = project.data;
+---
+
+<article
+  class="card project-card"
+  data-featured={featured}
+  data-project-slug={project.slug}
+>
+  {thumbnail && (
+    <div class="project-card-image">
+      <img
+        src={thumbnail}
+        alt={title}
+        width={400}
+        height={250}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  )}
+  <div class="card-body">
+    <div class="project-card-header">
+      {featured && <Badge variant="primary">Featured</Badge>}
+      <span class="badge">{domain}</span>
+    </div>
+    <h3 class="card-title">{title}</h3>
+    <p class="card-subtitle">{summary}</p>
+    {repoStats && (
+      <div class="project-card-repo-stats" aria-label="Repository statistics">
+        <span>★ {repoStats.stars}</span>
+        <span>⎇ {repoStats.forks}</span>
+        {repoStats.language && <span>{repoStats.language}</span>}
+      </div>
+    )}
+    <div class="project-card-stack">
+      {stack.slice(0, 4).map((tech) => (
+        <Badge>{tech}</Badge>
+      ))}
+      {stack.length > 4 && <Badge>+{stack.length - 4} more</Badge>}
+    </div>
+  </div>
+  <div class="card-footer">
+    <ProjectLinks
+      githubUrl={githubUrl}
+      liveUrl={liveUrl}
+      slug={project.slug}
+      title={title}
+      domain={domain}
+      featured={featured}
+    />
+  </div>
+</article>

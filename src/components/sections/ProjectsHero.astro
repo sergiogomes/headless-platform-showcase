@@ -1,0 +1,19 @@
+---
+interface Props {
+  projectCount: number;
+}
+
+const { projectCount } = Astro.props;
+---
+
+<section class="projects-hero">
+  <div class="container">
+    <h1 class="heading-1">Projects</h1>
+    <p class="body-large text-secondary">
+      Selected work across media platforms, fintech, enterprise systems, and developer tools.
+    </p>
+    <div class="projects-meta">
+      <span class="caption">{projectCount} projects</span>
+    </div>
+  </div>
+</section>

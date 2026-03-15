@@ -1,0 +1,125 @@
+---
+import '../styles/projects.css';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { enrichProjectsWithGitHub } from '../lib/github/queries';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectsHero from '../components/sections/ProjectsHero.astro';
+import ProjectsFilterErrorBoundary from '../components/filters/ProjectsFilterErrorBoundary';
+import ProjectsFilter from '../components/filters/ProjectsFilter';
+import ProjectsGrid from '../components/sections/ProjectsGrid.astro';
+import ProjectsEmpty from '../components/sections/ProjectsEmpty.astro';
+
+let allProjects: CollectionEntry<'projects'>[];
+try {
+  allProjects = await getCollection('projects');
+} catch (error) {
+  console.error('Failed to load projects collection:', error);
+  if (import.meta.env?.DEV) {
+    throw new Error(
+      `Content collection error: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+  allProjects = [];
+}
+
+const sortedProjects = allProjects
+  .filter((p: CollectionEntry<'projects'>) => p.data.status !== 'archived')
+  .sort((a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) => {
+    if (a.data.order !== b.data.order) return a.data.order - b.data.order;
+    return (
+      (b.data.startDate?.getTime() ?? 0) - (a.data.startDate?.getTime() ?? 0)
+    );
+  });
+
+const projectsForEnrichment = sortedProjects.map((p: CollectionEntry<'projects'>) => ({
+  slug: p.slug,
+  githubUrl: p.data.githubUrl,
+}));
+
+type Enriched = (typeof projectsForEnrichment)[0] & {
+  repoStats?: { stars: number; forks: number; language: string | null; updatedAt: string };
+};
+let enriched: Enriched[] = [];
+try {
+  enriched = await enrichProjectsWithGitHub(projectsForEnrichment);
+} catch (err) {
+  console.warn('GitHub enrichment failed, continuing without repo stats:', err);
+}
+
+const repoStatsMap = new Map<string, { stars: number; forks: number; language: string | null; updatedAt: string }>();
+enriched.forEach((p: Enriched) => {
+  if (p.githubUrl && p.repoStats) repoStatsMap.set(p.githubUrl, p.repoStats);
+});
+
+const allStacks: string[] = [...new Set(sortedProjects.flatMap((p: CollectionEntry<'projects'>) => p.data.stack))].sort();
+const allDomains: string[] = [...new Set(sortedProjects.map((p: CollectionEntry<'projects'>) => p.data.domain))].sort();
+const allTags: string[] = [...new Set(sortedProjects.flatMap((p: CollectionEntry<'projects'>) => p.data.tags))].sort();
+
+const projectsData = sortedProjects.map((p: CollectionEntry<'projects'>) => ({
+  slug: p.slug,
+  title: p.data.title,
+  summary: p.data.summary,
+  description: p.data.description,
+  stack: p.data.stack as string[],
+  domain: p.data.domain,
+  tags: p.data.tags as string[],
+  featured: p.data.featured,
+}));
+
+const hasActiveFilters = false;
+const filterCount = 0;
+
+const baseUrl = (import.meta as { env?: { SITE?: string } }).env?.SITE ?? 'https://example.com';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Projects',
+  description: 'Selected work across media platforms, fintech, enterprise systems, and developer tools.',
+  numberOfItems: sortedProjects.length,
+  itemListElement: sortedProjects.map((p, index) => ({
+    '@type': 'CreativeWork',
+    position: index + 1,
+    name: p.data.title,
+    description: p.data.summary,
+    url: `${baseUrl}/projects/${p.slug}`,
+  })),
+};
+const structuredDataJson = JSON.stringify(structuredData).replace(/</g, '\\u003c');
+---
+
+<BaseLayout
+  title="Projects | Headless Platform"
+  description="Selected work across media platforms, fintech, enterprise systems, and developer tools"
+>
+  <script type="application/ld+json" set:html={structuredDataJson} />
+  <ProjectsHero projectCount={sortedProjects.length} />
+
+  <section class="projects-section">
+    <div class="container">
+      <a href="#projects-grid" class="skip-link">Skip to projects</a>
+
+      <ProjectsFilterErrorBoundary client:idle>
+        <ProjectsFilter
+          projects={projectsData}
+          stacks={allStacks}
+          domains={allDomains}
+          tags={allTags}
+        />
+      </ProjectsFilterErrorBoundary>
+
+      <div id="projects-grid">
+        {sortedProjects.length > 0 ? (
+          <ProjectsGrid projects={sortedProjects} repoStatsMap={repoStatsMap} />
+        ) : (
+          <ProjectsEmpty hasActiveFilters={hasActiveFilters} filterCount={filterCount} />
+        )}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import { initProjectsAnalytics } from '../lib/analytics/projectsAnalytics';
+    initProjectsAnalytics();
+  </script>
+</BaseLayout>

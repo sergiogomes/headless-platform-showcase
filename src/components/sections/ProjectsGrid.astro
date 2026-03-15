@@ -1,0 +1,20 @@
+---
+import ProjectCard from '../cards/ProjectCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+  repoStatsMap?: Map<string, { stars: number; forks: number; language: string | null; updatedAt: string }>;
+}
+
+const { projects, repoStatsMap } = Astro.props;
+---
+
+<div class="projects-grid">
+  {projects.map((project) => (
+    <ProjectCard
+      project={project}
+      repoStats={project.data.githubUrl ? repoStatsMap?.get(project.data.githubUrl) : undefined}
+    />
+  ))}
+</div>
