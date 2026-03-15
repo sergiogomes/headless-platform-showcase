@@ -5,7 +5,7 @@ export const GitHubRepoResponseSchema = z.object({
   name: z.string(),
   full_name: z.string(),
   description: z.string().nullable(),
-  html_url: z.string().url(),
+  html_url: z.url(),
   homepage: z.string().nullable(),
   stargazers_count: z.number(),
   forks_count: z.number(),
@@ -93,7 +93,6 @@ export interface GitHubRequestOptions {
 }
 
 export const GitHubUrlSchema = z
-  .string()
   .url()
   .refine((url) => url.startsWith('https://github.com/'), {
     message: 'Must be a GitHub URL',

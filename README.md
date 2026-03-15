@@ -2,6 +2,11 @@
 
 A high-performance Astro + React engineering portfolio and platform demo showcasing headless architecture, GitHub API integration, analytics via dataLayer, Web Vitals instrumentation, MDX case studies, and scalable frontend patterns.
 
+## Requirements
+
+- **Node.js** `>=22.12.0` (see [.nvmrc](.nvmrc); use `nvm use` if you use nvm).  
+  `npm install` will fail with a clear message if Node is below 22.
+
 ## Setup
 
 1. **Clone the repository**
@@ -14,8 +19,9 @@ A high-performance Astro + React engineering portfolio and platform demo showcas
 2. **Install dependencies**
 
    ```bash
-   npm install
+   npm install --legacy-peer-deps
    ```
+   (Use `--legacy-peer-deps` until `@astrojs/tailwind` declares Astro 6 peer support.)
 
 3. **(Optional) GitHub token for repo stats**
    - Copy `.env.example` to `.env`

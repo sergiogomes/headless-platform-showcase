@@ -33,7 +33,7 @@ const sortedProjects = allProjects
   });
 
 const projectsForEnrichment = sortedProjects.map((p: CollectionEntry<'projects'>) => ({
-  slug: p.slug,
+  slug: p.id,
   githubUrl: p.data.githubUrl,
 }));
 
@@ -57,7 +57,7 @@ const allDomains: string[] = [...new Set(sortedProjects.map((p: CollectionEntry<
 const allTags: string[] = [...new Set(sortedProjects.flatMap((p: CollectionEntry<'projects'>) => p.data.tags))].sort();
 
 const projectsData = sortedProjects.map((p: CollectionEntry<'projects'>) => ({
-  slug: p.slug,
+  slug: p.id,
   title: p.data.title,
   summary: p.data.summary,
   description: p.data.description,
@@ -82,7 +82,7 @@ const structuredData = {
     position: index + 1,
     name: p.data.title,
     description: p.data.summary,
-    url: `${baseUrl}/projects/${p.slug}`,
+    url: `${baseUrl}/projects/${p.id}`,
   })),
 };
 const structuredDataJson = JSON.stringify(structuredData).replace(/</g, '\\u003c');

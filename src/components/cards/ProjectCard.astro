@@ -9,13 +9,14 @@ interface Props {
 }
 
 const { project, repoStats } = Astro.props;
-const { title, summary, thumbnail, stack, domain, tags, featured, githubUrl, liveUrl, slug } = project.data;
+const { title, summary, thumbnail, stack, domain, tags, featured, githubUrl, liveUrl } = project.data;
+const slug = project.id;
 ---
 
 <article
   class="card project-card"
   data-featured={featured}
-  data-project-slug={project.slug}
+  data-project-slug={project.id}
 >
   {thumbnail && (
     <div class="project-card-image">
@@ -54,7 +55,7 @@ const { title, summary, thumbnail, stack, domain, tags, featured, githubUrl, liv
     <ProjectLinks
       githubUrl={githubUrl}
       liveUrl={liveUrl}
-      slug={project.slug}
+      slug={project.id}
       title={title}
       domain={domain}
       featured={featured}

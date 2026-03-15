@@ -1,4 +1,6 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
+import { glob } from 'astro/loaders';
 
 export const projectSchema = z.object({
   title: z.string(),
@@ -23,9 +25,9 @@ export const projectSchema = z.object({
   ]),
   tags: z.array(z.string()).default([]),
 
-  githubUrl: z.string().url().optional(),
-  liveUrl: z.string().url().optional(),
-  externalUrl: z.string().url().optional(),
+  githubUrl: z.url().optional(),
+  liveUrl: z.url().optional(),
+  externalUrl: z.url().optional(),
 
   featured: z.boolean().default(false),
   status: z.enum(['completed', 'in-progress', 'archived']).default('completed'),
@@ -42,7 +44,21 @@ export const projectSchema = z.object({
 export type ProjectData = z.infer<typeof projectSchema>;
 
 const projectsCollection = defineCollection({
-  type: 'content',
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/projects',
+    generateId: ({ data, entry }) => {
+      if (
+        data &&
+        typeof data === 'object' &&
+        'slug' in data &&
+        typeof (data as { slug?: string }).slug === 'string'
+      ) {
+        return (data as { slug: string }).slug;
+      }
+      return entry.replace(/\.(md|mdx)$/, '').replace(/\//g, '-');
+    },
+  }),
   schema: projectSchema,
 });
 
