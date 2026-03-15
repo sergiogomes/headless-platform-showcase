@@ -45,8 +45,10 @@ const { title, description = '' } = Astro.props;
       </div>
     </footer>
     <script>
+      import { deferAnalytics } from '../lib/analytics/defer';
       import { initWebVitals } from '../lib/analytics/webVitals';
-      initWebVitals();
+
+      deferAnalytics(initWebVitals);
     </script>
   </body>
 </html>

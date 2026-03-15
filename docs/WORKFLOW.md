@@ -77,7 +77,7 @@ Read: docs/features/github-data-layer.md
 Implement the projects page, components, and data integration.
 ```
 
-**Phase 5: Analytics** (new chat, Auto)
+✅ **Phase 5: Analytics** (new chat, Auto)
 
 ```txt
 @analytics-engineer
@@ -89,7 +89,7 @@ Add event tracking for:
 - filter_change
 ```
 
-**Phase 6: Performance** (new chat, Auto)
+✅ **Phase 6: Performance** (new chat, Auto)
 
 ```txt
 @web-vitals-engineer

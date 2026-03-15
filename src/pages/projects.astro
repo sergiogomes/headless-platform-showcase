@@ -119,13 +119,16 @@ const structuredDataJson = JSON.stringify(structuredData).replace(/</g, '\\u003c
   </section>
 
   <script>
+    import { deferAnalytics } from '../lib/analytics/defer';
     import { initProjectsAnalytics } from '../lib/analytics/projectsAnalytics';
     import { trackEvent } from '../lib/analytics/track';
 
-    initProjectsAnalytics();
-    trackEvent('page_view', {
-      page_name: 'projects',
-      page_category: 'projects',
+    deferAnalytics(() => {
+      initProjectsAnalytics();
+      trackEvent('page_view', {
+        page_name: 'projects',
+        page_category: 'projects',
+      });
     });
   </script>
 </BaseLayout>

@@ -10,6 +10,9 @@ declare global {
 
 describe('trackEvent', () => {
   beforeEach(() => {
+    // Minimal window mock for node test environment
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (globalThis as any).window = (globalThis as any).window ?? {};
     // @ts-expect-error - deleting possibly undefined property for test isolation
     delete window.dataLayer;
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -46,7 +49,5 @@ describe('trackEvent', () => {
 
     expect(window.dataLayer).toHaveLength(2);
   });
-}
-*** End Patch```} />
+});
 
-```commentary to=functions.ApplyPatch

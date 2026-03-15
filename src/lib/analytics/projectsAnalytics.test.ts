@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { ProjectsPageEvent } from '../../types/analytics';
+import { JSDOM } from 'jsdom';
 import { initProjectsAnalytics } from './projectsAnalytics';
 
 declare global {
@@ -10,7 +11,11 @@ declare global {
 
 describe('initProjectsAnalytics', () => {
   beforeEach(() => {
-    document.body.innerHTML = '';
+    const dom = new JSDOM('<!doctype html><html><body></body></html>');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (globalThis as any).window = dom.window as unknown as Window & typeof globalThis;
+    (globalThis as any).document = dom.window.document;
+
     // @ts-expect-error - deleting possibly undefined property for test isolation
     delete window.dataLayer;
   });
