@@ -65,7 +65,7 @@ Design the GitHub data layer (queries, caching, types).
 Output: docs/features/github-data-layer.md
 ```
 
-**Phase 4: Implementation** (new chat, Auto)
+✅ **Phase 4: Implementation** (new chat, Auto)
 
 ```txt
 @astro-platform-architect
