@@ -101,6 +101,22 @@ export default function ProjectsFilter({
     });
   }, [filteredProjects]);
 
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (filteredProjects.length === 0) return;
+
+    const resultsSummary = document.querySelector<HTMLElement>('.projects-filter-results');
+    if (resultsSummary) {
+      resultsSummary.focus();
+      return;
+    }
+
+    const firstVisibleCard = document.querySelector<HTMLElement>(
+      '.project-card:not([aria-hidden="true"])'
+    );
+    firstVisibleCard?.focus();
+  }, [isHydrated, filteredProjects.length]);
+
   const handleSearchChange = useCallback(
     (query: string) => {
       const sanitized = sanitizeSearchQuery(query);
@@ -311,6 +327,7 @@ export default function ProjectsFilter({
         role="status"
         aria-live="polite"
         aria-atomic="true"
+        tabIndex={-1}
       >
         Showing {filteredProjects.length} of {projects.length} projects
       </div>

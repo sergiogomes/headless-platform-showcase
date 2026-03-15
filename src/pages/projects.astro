@@ -75,14 +75,21 @@ const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'Projects',
-  description: 'Selected work across media platforms, fintech, enterprise systems, and developer tools.',
+  description:
+    'Selected work across media platforms, fintech, enterprise systems, and developer tools.',
   numberOfItems: sortedProjects.length,
   itemListElement: sortedProjects.map((p, index) => ({
-    '@type': 'CreativeWork',
+    '@type': 'SoftwareApplication',
     position: index + 1,
     name: p.data.title,
     description: p.data.summary,
     url: `${baseUrl}/projects/${p.id}`,
+    image: p.data.thumbnail ?? p.data.coverImage ?? `${baseUrl}/images/projects/${p.id}.png`,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    keywords: p.data.tags,
+    programmingLanguage: p.data.stack,
+    codeRepository: p.data.githubUrl,
   })),
 };
 const structuredDataJson = JSON.stringify(structuredData).replace(/</g, '\\u003c');

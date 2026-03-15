@@ -11,7 +11,7 @@ export const projectSchema = z.object({
   coverImage: z.string().optional(),
   thumbnail: z.string().optional(),
   thumbnailDark: z.string().optional(),
-  thumbnailAlt: z.string().optional(),
+  thumbnailAlt: z.string().min(10, 'Alt text must be descriptive'),
 
   stack: z.array(z.string()).default([]),
   domain: z.enum([

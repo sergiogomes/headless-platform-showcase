@@ -12,10 +12,9 @@ import type { GitHubResult, RepoCardStats, RepoStats } from '../types';
 
 vi.mock('../client', () => {
   const request = vi.fn();
-  const isNearRateLimit = vi.fn().mockReturnValue(false);
-  const getETag = vi.fn().mockReturnValue(null);
-  const getLastModified = vi.fn().mockReturnValue(null);
-
+  const isNearRateLimit = vi.fn(() => false);
+  const getETag = vi.fn(() => null);
+  const getLastModified = vi.fn(() => null);
   return {
     getGitHubClient: () => ({
       request,
@@ -29,7 +28,6 @@ vi.mock('../client', () => {
 vi.mock('../cache', () => {
   const repoStore = new Map<string, RepoStats>();
   const cardStore = new Map<string, RepoCardStats>();
-
   return {
     getCachedRepo: vi.fn((key: string) => repoStore.get(key) ?? null),
     setCachedRepo: vi.fn((key: string, data: RepoStats) => {

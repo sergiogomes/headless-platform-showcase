@@ -49,5 +49,4 @@ test.describe('Projects page filtering', () => {
     expect(visibleAfterFilters).toBeLessThanOrEqual(initialVisibleCount);
     expect(visibleAfterFilters).toBeGreaterThan(0);
   });
-}
-
+});
