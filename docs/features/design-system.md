@@ -4,6 +4,21 @@ A technical, minimal, and content-first design system for modern engineering pla
 
 ---
 
+## Implementation Reference
+
+**Canonical implementation:** The core design tokens and component utilities are implemented in **`src/styles/global.css`**. That file is the single source of truth for:
+
+- Spacing scale (`--space-*`)
+- Type scale, font families, weights, line heights, letter spacing (`--text-*`, `--font-*`, `--leading-*`, `--tracking-*`)
+- Border radius (`--radius-*`)
+- Color primitives and semantic tokens (`--gray-*`, `--primary-*`, `--bg-*`, `--text-*`, `--border-*`, `--interactive-*`)
+- Shadows, z-index scale, and motion tokens (`--shadow-*`, `--z-*`, `--duration-*`, `--ease-*`, `--transition-*`)
+- Component size tokens (`--size-*`) for dropdowns, skeletons, and content widths
+
+Page-specific styles (e.g. `src/styles/projects.css`) use these tokens and add layout/component overrides only. When in doubt, align new styles with the token set in `global.css` and this document.
+
+---
+
 ## Design Philosophy
 
 This design system combines the best elements from multiple professional dashboards to create a cohesive, technical aesthetic that prioritizes:
