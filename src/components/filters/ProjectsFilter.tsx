@@ -210,6 +210,38 @@ export default function ProjectsFilter({
     selectedTags.length > 0;
 
   useEffect(() => {
+    if (!isHydrated) return;
+
+    const activeFilters: string[] = [
+      ...selectedStacks.map((s) => `stack:${s}`),
+      ...selectedDomains.map((d) => `domain:${d}`),
+      ...selectedTags.map((t) => `tag:${t}`),
+    ];
+
+    if (activeFilters.length > 1) {
+      const results = filterProjects(projects, {
+        searchQuery,
+        selectedStacks,
+        selectedDomains,
+        selectedTags,
+      });
+
+      trackEvent('filter_combination', {
+        filters: activeFilters.join(','),
+        filter_count: activeFilters.length,
+        results_count: results.length,
+      });
+    }
+  }, [
+    isHydrated,
+    projects,
+    searchQuery,
+    selectedStacks,
+    selectedDomains,
+    selectedTags,
+  ]);
+
+  useEffect(() => {
     function onClearFilters() {
       handleClearAll();
     }

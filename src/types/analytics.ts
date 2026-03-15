@@ -1,3 +1,9 @@
+export interface PageViewEvent {
+  event: 'page_view';
+  page_name: string;
+  page_category: string;
+}
+
 export interface SearchUsedEvent {
   event: 'search_used';
   search_term: string;
@@ -53,6 +59,7 @@ export interface WebVitalsEvent {
 }
 
 export type ProjectsPageEvent =
+  | PageViewEvent
   | SearchUsedEvent
   | FilterChangeEvent
   | ProjectClickEvent
