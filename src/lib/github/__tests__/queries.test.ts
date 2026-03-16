@@ -152,29 +152,42 @@ describe('GitHub queries unit tests', () => {
         'https://github.com/owner/repo2',
       ];
 
-      const mockResults: Record<string, GitHubResult<RepoCardStats>> = {
-        [urls[0]]: {
-          success: true,
-          cached: false,
-          fetchedAt: '2026-03-14T12:00:00Z',
-          data: { stars: 1, forks: 0, language: 'TS', updatedAt: '2026-03-14T12:00:00Z' },
-        },
-        [urls[1]]: {
-          success: true,
-          cached: false,
-          fetchedAt: '2026-03-14T12:00:00Z',
-          data: { stars: 2, forks: 1, language: 'TS', updatedAt: '2026-03-14T12:00:00Z' },
-        },
+      const mockCardStats1: RepoCardStats = {
+        stars: 1,
+        forks: 0,
+        language: 'TS',
+        updatedAt: '2026-03-14T12:00:00Z',
       };
 
-      const spy = vi.spyOn(await import('../queries'), 'fetchRepoCardStats');
-      spy.mockImplementation(async (githubUrl: string) => mockResults[githubUrl] as any);
+      const mockCardStats2: RepoCardStats = {
+        stars: 2,
+        forks: 1,
+        language: 'TS',
+        updatedAt: '2026-03-14T12:00:00Z',
+      };
+
+      const { getCachedCardStats } = await import('../cache');
+      (getCachedCardStats as unknown as vi.Mock)
+        .mockReturnValueOnce(mockCardStats1)
+        .mockReturnValueOnce(mockCardStats2);
 
       const map = await fetchMultipleRepoStats(urls);
 
       expect(map.size).toBe(2);
-      expect(map.get(urls[0])).toEqual(mockResults[urls[0]]);
-      expect(map.get(urls[1])).toEqual(mockResults[urls[1]]);
+      
+      const result1 = map.get(urls[0]);
+      expect(result1?.success).toBe(true);
+      if (result1?.success) {
+        expect(result1.data).toEqual(mockCardStats1);
+        expect(result1.cached).toBe(true);
+      }
+
+      const result2 = map.get(urls[1]);
+      expect(result2?.success).toBe(true);
+      if (result2?.success) {
+        expect(result2.data).toEqual(mockCardStats2);
+        expect(result2.cached).toBe(true);
+      }
     });
   });
 
@@ -192,40 +205,34 @@ describe('GitHub queries unit tests', () => {
         { slug: 'c' },
       ];
 
-      const mockStats: RepoCardStats = {
+      const mockStats1: RepoCardStats = {
         stars: 5,
         forks: 1,
         language: 'TypeScript',
         updatedAt: '2026-03-14T12:00:00Z',
       };
 
-      const urls = projects
-        .map((p) => p.githubUrl)
-        .filter((url): url is string => !!url);
+      const mockStats2: RepoCardStats = {
+        stars: 3,
+        forks: 0,
+        language: 'JavaScript',
+        updatedAt: '2026-03-14T12:00:00Z',
+      };
 
-      const statsMap = new Map<string, GitHubResult<RepoCardStats>>();
-      urls.forEach((url) => {
-        statsMap.set(url, {
-          success: true,
-          cached: false,
-          fetchedAt: '2026-03-14T12:00:00Z',
-          data: mockStats,
-        });
-      });
-
-      const originalFetchMultiple = await import('../queries');
-      vi.spyOn(originalFetchMultiple, 'fetchMultipleRepoStats').mockResolvedValue(statsMap);
+      const { getCachedCardStats } = await import('../cache');
+      (getCachedCardStats as unknown as vi.Mock)
+        .mockReturnValueOnce(mockStats1)
+        .mockReturnValueOnce(mockStats2);
 
       const result = await enrichProjectsWithGitHub(projects);
 
-      const enrichedWithStats = result.filter((p) => 'repoStats' in p) as Array<
+      const enrichedWithStats = result.filter((p) => 'repoStats' in p && p.repoStats) as Array<
         { repoStats: RepoCardStats }
       >;
 
       expect(enrichedWithStats).toHaveLength(2);
-      enrichedWithStats.forEach((p) => {
-        expect(p.repoStats).toEqual(mockStats);
-      });
+      expect(enrichedWithStats[0].repoStats).toEqual(mockStats1);
+      expect(enrichedWithStats[1].repoStats).toEqual(mockStats2);
 
       const withoutGitHub = result.find((p) => (p as any).slug === 'c') as any;
       expect(withoutGitHub.repoStats).toBeUndefined();
